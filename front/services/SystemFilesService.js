@@ -1,10 +1,11 @@
+import { Directory } from '../models/Directory.js';
 import System from '../models/System.js';
 
 class FileSystemService{
     constructor() {
-        this.root = new System();
-        this.rootDir = "C:/";
-        this.currentDir = "C:/";
+        this.System = new System();
+        this.rootDir = this.System.root;
+        this.currentDir = new Directory("C:/",null)
     }
 
     //salva o último comando
@@ -21,12 +22,23 @@ class FileSystemService{
     }
 
     //achar diretório
+    //útil para o cd
     findDir(path){
         if(path === "/") {
             this.currentDir = this.rootDir;
         }
         
-        let current = path.startsWith('/') ? th
+        //se for só / volta para o C:/
+        //senão recebe o atual
+        let current = path.startsWith('/') ? this.rootDir.name : this.currentDir.name;
+        const parts = this.parsePath(path);
+
+        for(const part of parts){
+            if(part === '..'){
+                current = current.parent
+            }
+        }
+
     }  
 }
 
