@@ -2,18 +2,34 @@ export class Directory {
     constructor(name, parent) {
         this.name = name;
         this.parent = parent;
-        this.directories = {};
-        this.files = {};
+        //acesso pelo nome
+        this.content = {};
     }
 
     addDirectory(directory) {
-        this.directories[directory] = directory;
+        if (!directory || !directory.name) {
+            throw new Error("Invalid directory object: must have a 'name' property.");
+        }
+    
+        if (this.content[directory.name]) {
+            throw new Error(`A directory with the name '${directory.name}' already exists.`);
+        }
+    
+        this.content[directory.name] = new Directory(directory.name, this);
     }
 
     addFile(file) {
+        if(!file || !file.name || !file.extension) {
+            throw new Error("Invalid file object: must have a 'name' or 'extension' property.");
+        }
+
+        if (this.content[file.name]) {
+            throw new Error(`A file with the name '${file.name}' already exists.`);
+        }
+
         this.files[file] = file;
     }
-
+    
     removeDirectory(directory) {
         delete this.directories[directory];
     }
