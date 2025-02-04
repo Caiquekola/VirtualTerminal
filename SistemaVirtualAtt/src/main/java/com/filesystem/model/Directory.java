@@ -2,11 +2,11 @@ package com.filesystem.model;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.Map.Entry;
 
-public class Directory {
-    private String name;
+public class Directory extends Dados {
     private Directory parent;
-    private Map<String, Object> content;
+    private Map<String, Dados> content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private String owner;
@@ -60,7 +60,7 @@ public class Directory {
 
     public List<Map<String, Object>> getDetailedContents() {
         List<Map<String, Object>> details = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : content.entrySet()) {
+        for (Map.Entry<String, Dados> entry : content.entrySet()) {
             Map<String, Object> item = new HashMap<>();
             item.put("name", entry.getKey());
             if (entry.getValue() instanceof File) {
@@ -70,11 +70,9 @@ public class Directory {
                 item.put("permissions", file.getPermissions());
                 item.put("owner", file.getOwner());
                 item.put("modified", file.getModifiedAt());
-            } else {
+            } else if (entry.getValue() instanceof Directory) {
                 Directory dir = (Directory) entry.getValue();
                 item.put("type", "directory");
-                item.put("permissions", dir.getPermissions());
-                item.put("owner", dir.getOwner());
                 item.put("modified", dir.getModifiedAt());
             }
             details.add(item);
@@ -101,7 +99,7 @@ public class Directory {
         if (content.containsKey(newName)) {
             throw new IllegalArgumentException("Item already exists: " + newName);
         }
-        Object item = content.remove(oldName);
+        Dados item = content.remove(oldName);
         if (item instanceof File) {
             ((File) item).setName(newName.substring(0, newName.lastIndexOf('.')));
         } else if (item instanceof Directory) {
@@ -113,7 +111,7 @@ public class Directory {
 
     public List<String> find(String searchName) {
         List<String> results = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : content.entrySet()) {
+        for (Entry<String, Dados> entry : content.entrySet()) {
             if (entry.getKey().contains(searchName)) {
                 results.add(getFullPath() + "/" + entry.getKey());
             }
@@ -192,5 +190,10 @@ public class Directory {
             }
         }
         return result.toString();
+    }
+
+    @Override
+    public String getType() {
+        return "Directory";
     }
 }

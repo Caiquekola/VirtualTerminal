@@ -4,11 +4,9 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class File {
-    private String name;
+public class File extends Dados {
     private String content;
     private String extension;
-    private Directory parent;
     private long size;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -106,5 +104,10 @@ public class File {
     public void setPermissions(String permissions) {
         this.permissions = permissions;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public String getType() {
+        return "File";
     }
 }
