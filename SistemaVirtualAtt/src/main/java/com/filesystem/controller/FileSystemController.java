@@ -9,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/fs")
-@CrossOrigin(origins = "*")
 public class FileSystemController {
     private final FileSystemService fileSystemService;
 

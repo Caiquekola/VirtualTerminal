@@ -1,241 +1,263 @@
-// Window Management
-let activeWindow = null;
-let windows = {};
-let currentPath = '/';
+// Gerenciamento de Janelas
+let janelaAtiva = null;
+let janelas = {};
+let caminhoAtual = '/';
+const ipBackend = 'http://localhost:8080';
 
-
-// Initialize windows positions
+// Inicializa posições das janelas
 document.addEventListener('DOMContentLoaded', () => {
-    windows = {
-        fileExplorer: document.getElementById('fileExplorer'),
+    janelas = {
+        exploradorDeArquivos: document.getElementById('fileExplorer'),
         terminal: document.getElementById('terminal')
     };
 
-    // Set initial positions
-    positionWindow(windows.fileExplorer, 100, 100);
-    positionWindow(windows.terminal, 150, 150);
+    // Define posições iniciais
+    posicionarJanela(janelas.exploradorDeArquivos, 100, 100);
+    posicionarJanela(janelas.terminal, 150, 150);
 
-    // Make windows draggable
-    Object.values(windows).forEach(makeWindowDraggable);
+    // Torna as janelas arrastáveis
+    Object.values(janelas).forEach(tornarJanelaArrastavel);
 });
 
-function makeWindowDraggable(windowElement) {
-    const header = windowElement.querySelector('.window-header');
-    let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
+function tornarJanelaArrastavel(elementoJanela) {
+    const cabecalho = elementoJanela.querySelector('.window-header');
+    let estaArrastando = false;
+    let posXAtual;
+    let posYAtual;
+    let posXInicial;
+    let posYInicial;
 
-    header.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        initialX = e.clientX - windowElement.offsetLeft;
-        initialY = e.clientY - windowElement.offsetTop;
+    cabecalho.addEventListener('mousedown', (e) => {
+        estaArrastando = true;
+        posXInicial = e.clientX - elementoJanela.offsetLeft;
+        posYInicial = e.clientY - elementoJanela.offsetTop;
     });
 
     document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-            windowElement.style.left = currentX + 'px';
-            windowElement.style.top = currentY + 'px';
+        if (estaArrastando) {
+            posXAtual = e.clientX - posXInicial;
+            posYAtual = e.clientY - posYInicial;
+            elementoJanela.style.left = posXAtual + 'px';
+            elementoJanela.style.top = posYAtual + 'px';
         }
     });
 
     document.addEventListener('mouseup', () => {
-        isDragging = false;
+        estaArrastando = false;
     });
 }
 
-function positionWindow(windowElement, left, top) {
-    windowElement.style.left = left + 'px';
-    windowElement.style.top = top + 'px';
+function posicionarJanela(elementoJanela, esquerda, topo) {
+    elementoJanela.style.left = esquerda + 'px';
+    elementoJanela.style.top = topo + 'px';
 }
 
-function activateWindow(windowElement) {
-    if (activeWindow) {
-        activeWindow.style.zIndex = '1';
+function ativarJanela(elementoJanela) {
+    if (janelaAtiva) {
+        janelaAtiva.style.zIndex = '1';
     }
-    windowElement.style.zIndex = '2';
-    activeWindow = windowElement;
+    elementoJanela.style.zIndex = '2';
+    janelaAtiva = elementoJanela;
 }
 
-// File Explorer Functions
-function openFileExplorer() {
-    windows.fileExplorer.classList.add('active');
-    activateWindow(windows.fileExplorer);
-    updateFileExplorer();
+// Funções do Explorador de Arquivos
+function abrirExploradorDeArquivos() {
+    janelas.exploradorDeArquivos.classList.add('active');
+    ativarJanela(janelas.exploradorDeArquivos);
+    atualizarExploradorDeArquivos();
+    document.getElementById('overlay').classList.add('active');
+    document.querySelector('.desktop').classList.add('blur');
 }
 
-function closeFileExplorer() {
-    windows.fileExplorer.classList.remove('active');
+function fecharExploradorDeArquivos() {
+    janelas.exploradorDeArquivos.classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+    document.querySelector('.desktop').classList.remove('blur');
 }
 
-function updateFileExplorer() {
-    fetch('/api/fs/ls-l')
+function atualizarExploradorDeArquivos() {
+    fetch(ipBackend + '/api/fs/ls-l')
         .then(response => response.json())
         .then(items => {
-            const content = document.getElementById('fileExplorerContent');
-            content.innerHTML = '';
-            
+            const conteudo = document.getElementById('fileExplorerContent');
+            conteudo.innerHTML = '';
+
             items.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'file-item';
-                
-                const icon = document.createElement('i');
-                icon.className = item.type === 'directory' 
-                    ? 'fas fa-folder' 
-                    : getFileIcon(item.name);
-                
-                const name = document.createElement('span');
-                name.textContent = item.name;
-                
-                itemElement.appendChild(icon);
-                itemElement.appendChild(name);
-                
-                itemElement.onclick = () => handleItemClick(item);
-                
-                content.appendChild(itemElement);
+                const elementoItem = document.createElement('div');
+                elementoItem.className = 'file-item';
+
+                const icone = document.createElement('i');
+                icone.className = item.type === 'directory'
+                    ? 'fas fa-folder'
+                    : obterIconeArquivo(item.name);
+
+                const nome = document.createElement('span');
+                nome.textContent = item.name;
+
+                elementoItem.appendChild(icone);
+                elementoItem.appendChild(nome);
+
+                elementoItem.onclick = () => cliqueNoItem(item);
+
+                conteudo.appendChild(elementoItem);
             });
         });
 }
 
-function getFileIcon(filename) {
-    if (filename.endsWith('.txt')) return 'fas fa-file-alt';
-    if (filename.endsWith('.zip')) return 'fas fa-file-archive';
+function obterIconeArquivo(nomeArquivo) {
+    if (nomeArquivo.endsWith('.txt')) return 'fas fa-file-alt';
+    if (nomeArquivo.endsWith('.zip')) return 'fas fa-file-archive';
     return 'fas fa-file';
 }
 
-function handleItemClick(item) {
+function cliqueNoItem(item) {
     if (item.type === 'directory') {
-        fetch('/api/fs/cd', {
+        fetch(ipBackend + '/api/fs/cd', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: item.name })
         })
-        .then(() => {
-            currentPath += item.name + '/';
-            document.getElementById('currentPath').textContent = currentPath;
-            updateFileExplorer();
-        });
+            .then(() => {
+                caminhoAtual += item.name + '/';
+                document.getElementById('currentPath').textContent = caminhoAtual;
+                atualizarExploradorDeArquivos();
+            });
     }
 }
 
-function navigateUp() {
-    if (currentPath === '/') return;
-    
-    fetch('/api/fs/cd', {
+function navegarParaCima() {
+    if (caminhoAtual === '/') return;
+
+    fetch(`${ipBackend}/api/fs/cd`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path: '..' })
     })
-    .then(() => {
-        currentPath = currentPath.split('/').slice(0, -2).join('/') + '/';
-        document.getElementById('currentPath').textContent = currentPath;
-        updateFileExplorer();
-    });
+        .then(() => {
+            caminhoAtual = caminhoAtual.split('/').slice(0, -2).join('/') + '/';
+            document.getElementById('currentPath').textContent = caminhoAtual;
+            atualizarExploradorDeArquivos();
+        });
 }
 
-// Terminal Functions
-function openTerminal() {
-    
-    windows.terminal.classList.add('active');
-    activateWindow(windows.terminal);
+// Funções do Terminal
+function abrirTerminal() {
+    janelas.terminal.classList.add('active');
+    ativarJanela(janelas.terminal);
     document.getElementById('terminalInput').focus();
+    document.getElementById('overlay').classList.add('active');
+    document.querySelector('.desktop').classList.add('blur');
 }
 
-function closeTerminal() {
-    windows.terminal.classList.remove('active');
+function fecharTerminal() {
+    janelas.terminal.classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+    document.querySelector('.desktop').classList.remove('blur');
 }
 
-function handleTerminalInput(event) {
+
+
+// Adição de foco quando clicado em qualquer lugar no terminal
+const windowContent = document.getElementById('windowContent');
+const terminalInput = document.getElementById('terminalInput');
+
+
+windowContent.addEventListener('click', () => {
+    terminalInput.focus();
+});
+
+function entradaTerminal(event) {
     if (event.key === 'Enter') {
         const input = event.target;
-        const command = input.value.trim();
-        
-        if (command === '') return;
-        
-        // Add command to output
+        const comando = input.value.trim();
+
+        if (comando === '') return;
+
+        // Adiciona comando ao output
         const outputDiv = document.getElementById('terminalOutput');
-        outputDiv.innerHTML += `<div>C:\\>${command}</div>`;
-        
-        // Process command
-        processCommand(command)
+        outputDiv.innerHTML += `<div>C:\\>${comando}</div>`;
+
+        // Processa comando
+        processarComando(comando)
             .then(output => {
                 outputDiv.innerHTML += `<div class="command-output">${output}</div>`;
                 outputDiv.scrollTop = outputDiv.scrollHeight;
             })
             .catch(error => {
-                outputDiv.innerHTML += `<div class="command-output" style="color: red;">Error: ${error.message}</div>`;
+                outputDiv.innerHTML += `<div class="command-output" style="color: red;">Erro: ${error.message}</div>`;
                 outputDiv.scrollTop = outputDiv.scrollHeight;
             });
-        
+
         input.value = '';
     }
 }
 
-async function processCommand(command) {
-    const parts = command.split(' ');
-    const cmd = parts[0].toLowerCase();
-    
+async function processarComando(comando) {
+    const partes = comando.split(' ');
+    const cmd = partes[0].toLowerCase();
+
     switch (cmd) {
         case 'dir':
-        case 'ls':
-            const response = await fetch('/api/fs/ls-l');
+        case 'ls': {
+            const response = await fetch(`${ipBackend}/api/fs/ls-l`);
             const items = await response.json();
-            return items.map(item => 
+            return items.map(item =>
                 `${item.type.padEnd(10)} ${item.size || '<DIR>'.padEnd(8)} ${item.name}`
             ).join('\n');
-            
+        }
+
         case 'cd':
-            if (parts.length < 2) return 'Current directory: ' + currentPath;
-            await fetch('/api/fs/cd', {
+            if (partes.length < 2) return 'Diretório atual: ' + caminhoAtual;
+            await fetch(`${ipBackend}/api/fs/cd`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ path: parts[1] })
+                body: JSON.stringify({ path: partes[1] })
             });
-            currentPath = parts[1] === '/' ? '/' : currentPath + parts[1] + '/';
-            return `Changed directory to: ${currentPath}`;
-            
+            caminhoAtual = partes[1] === '/' ? '/' : caminhoAtual + partes[1] + '/';
+            return `Mudou para o diretório: ${caminhoAtual}`;
+
         case 'mkdir':
-            if (parts.length < 2) return 'Usage: mkdir <directory_name>';
-            await fetch('/api/fs/mkdir/' + parts[1], { method: 'POST' });
-            return `Directory created: ${parts[1]}`;
-            
+            if (partes.length < 2) return 'Uso: mkdir <nome_do_diretório>';
+            await fetch(`${ipBackend}/api/fs/mkdir/` + partes[1], { method: 'POST' });
+            return `Diretório criado: ${partes[1]}`;
+
         case 'type':
         case 'cat':
-            if (parts.length < 2) return 'Usage: type <file_name>';
-            const content = await fetch('/api/fs/cat/' + parts[1]);
-            return await content.text();
-            
+            if (partes.length < 2) return 'Uso: type <nome_do_arquivo>';
+            const conteudo = await fetch(ipBackend + '/api/fs/cat/' + partes[1]);
+            return await conteudo.text();
+
         case 'del':
         case 'rm':
-            if (parts.length < 2) return 'Usage: del <file_name>';
-            await fetch('/api/fs/rm/' + parts[1], { method: 'DELETE' });
-            return `Deleted: ${parts[1]}`;
-            
-        case 'tree':
-            const tree = await fetch('/api/fs/tree');
-            return await tree.text();
-            
+            if (partes.length < 2) return 'Uso: del <nome_do_arquivo>';
+            await fetch(`${ipBackend}/api/fs/rm/` + partes[1], { method: 'DELETE' });
+            return `Deletado: ${partes[1]}`;
+
+        case 'tree': {
+            const arvore = await fetch(ipBackend + '/api/fs/tree');
+            return await arvore.text();
+        }
+
         case 'help':
-            return `Available commands:
-dir, ls        - List directory contents
-cd <dir>      - Change directory
-mkdir <dir>    - Create directory
-type, cat      - Display file contents
-del, rm        - Delete file
-tree           - Display directory structure
-help           - Show this help`;
-            
+            return `Comandos disponíveis:
+                    dir, ls        - Listar conteúdo do diretório
+                    cd <dir>       - Mudar de diretório
+                    mkdir <dir>    - Criar diretório
+                    type, cat      - Exibir conteúdo do arquivo
+                    del, rm        - Deletar arquivo
+                    tree           - Exibir estrutura de diretórios
+                    help           - Mostrar esta ajuda`;
+
         default:
-            return `'${cmd}' is not recognized as an internal command`;
+            return `'${cmd}' não é reconhecido como um comando interno`;
     }
 }
 
-// Initialize
+// Inicialização
 document.addEventListener('click', (e) => {
     if (e.target.closest('.window')) {
-        activateWindow(e.target.closest('.window'));
+        ativarJanela(e.target.closest('.window'));
     }
 });
+
+

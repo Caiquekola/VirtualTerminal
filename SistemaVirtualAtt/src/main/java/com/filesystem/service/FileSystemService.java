@@ -17,11 +17,18 @@ public class FileSystemService {
     }
 
     public void mkdir(String name) {
+        // Se a pasta já existir, lançar uma exceção
+        if(fileSystem.getCurrentDirectory().getContent(name) != null) {
+            throw new IllegalArgumentException("Diretório já existe: " + name);
+        }
         fileSystem.getCurrentDirectory().addDirectory(name);
         fileSystem.addToHistory("mkdir " + name);
     }
 
     public void rmdir(String name) {
+        if(fileSystem.getCurrentDirectory().getContent(name) == null) {
+            throw new IllegalArgumentException("Diretorio não encontrado: " + name);
+        }
         fileSystem.getCurrentDirectory().remove(name);
         fileSystem.addToHistory("rmdir " + name);
     }
@@ -32,6 +39,9 @@ public class FileSystemService {
     }
 
     public void rename(String oldName, String newName) {
+        if(fileSystem.getCurrentDirectory().getContent(oldName) == null) {
+            throw new IllegalArgumentException("Item não encontrado: " + oldName);
+        }
         fileSystem.getCurrentDirectory().rename(oldName, newName);
         fileSystem.addToHistory("rename " + oldName + " " + newName);
     }
@@ -47,6 +57,9 @@ public class FileSystemService {
     }
 
     public void touch(String name, String extension) {
+        if(fileSystem.getCurrentDirectory().getContent(name) != null) {
+            throw new IllegalArgumentException("Arquivo já existe: " + name);
+        }
         File file = new File(name, "", extension, fileSystem.getCurrentDirectory());
         fileSystem.getCurrentDirectory().addFile(file);
         fileSystem.addToHistory("touch " + name + "." + extension);
@@ -75,6 +88,9 @@ public class FileSystemService {
     }
 
     public void rm(String name) {
+        if(fileSystem.getCurrentDirectory().getContent(name) == null) {
+            throw new IllegalArgumentException("Item não encontrado: " + name);
+        }
         fileSystem.getCurrentDirectory().remove(name);
         fileSystem.addToHistory("rm " + name);
     }

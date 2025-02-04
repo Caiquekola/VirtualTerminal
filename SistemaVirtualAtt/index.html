@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual File System</title>
+    <title>Sistema de Arquivos Virtual</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div class="overlay" id="overlay"></div>
     <div class="desktop">
         <div class="icons">
-            <div class="desktop-icon" onclick="openFileExplorer()">
+            <div class="desktop-icon" onclick="abrirExploradorDeArquivos()">
                 <i class="fas fa-folder"></i>
                 <span>Explorador de Arquivos</span>
             </div>
-            <div class="desktop-icon" onclick="openTerminal()">
+            <div class="desktop-icon" onclick="abrirTerminal()">
                 <i class="fas fa-terminal"></i>
-                <span>Terminal</span>
+                <span>Prompt de Comando</span>
             </div>
         </div>
     </div>
@@ -25,34 +26,34 @@
     <div class="window file-explorer" id="fileExplorer">
         <div class="window-header">
             <span>Explorador de Arquivos</span>
-            <button class="close-btn" onclick="closeFileExplorer()">×</button>
+            <button class="close-btn" onclick="fecharExploradorDeArquivos()">×</button>
         </div>
         <div class="window-toolbar">
-            <button onclick="navigateUp()">
-                <i class="fas fa-arrow-up"></i> Up
+            <button onclick="navegarParaCima()">
+                <i class="fas fa-arrow-left"></i> Voltar
             </button>
             <span id="currentPath">/</span>
         </div>
         <div class="window-content" id="fileExplorerContent">
-            <!-- Arquivos e pastas sera aqui -->
+            <!-- Arquivos e pastas serão exibidos aqui -->
         </div>
     </div>
 
-    <!-- nosso terminal -->
+    <!-- Terminal -->
     <div class="window terminal" id="terminal">
         <div class="window-header">
-            <span>Terminal</span>
-            <button class="close-btn" onclick="closeTerminal()">×</button>
+            <span>Prompt de Comando</span>
+            <button class="close-btn" onclick="fecharTerminal()">×</button>
         </div>
-        <div class="window-content">
+        <div class="window-content" id="windowContent">
             <div class="terminal-output" id="terminalOutput">
-                <div class="welcome-message">Sistema Virtual [1.0]</div>
-                <div class="welcome-message">(c) 2025 Sistema Virtual. Todos os direitos reservados.</div>
+                <div class="welcome-message">Sistema Virtual [versão 1.0.0.01]</div>
+                <div class="welcome-message">© 2025 Sistema Virtual. Todos os direitos reservados.</div>
                 <div class="welcome-message">&nbsp;</div>
             </div>
             <div class="terminal-input-line">
                 <span class="prompt">C:\></span>
-                <input type="text" id="terminalInput" onkeydown="handleTerminalInput(event)">
+                <input type="text" id="terminalInput" onkeydown="entradaTerminal(event)">
             </div>
         </div>
     </div>
