@@ -24,6 +24,7 @@ body {
     
 }
 
+
 .desktop-icon {
     width: 80px;
     display: flex;
@@ -32,7 +33,6 @@ body {
     color: white;
     cursor: pointer;
     padding: 5px;
-    
 }
 
 .desktop-icon:hover {
@@ -55,12 +55,12 @@ body {
 
 .taskbar {
     height: 40px;
-    background-color: #c0c0c0;
+    background-color: #6a6a6a;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    border-top: 2px solid #ffffff;
+    border-top: 2px solid #b3b3b3;
     padding: 2px;
 }
 
@@ -71,31 +71,23 @@ body {
     height: 100%;
 }
 .timeAndDate{
+    font-size: 13px;
+    color: white;
+    margin-right: 1rem;
     display: flex;
     justify-content: center;
     flex-direction: column;
-    
+    text-align: center;
+}
 
-}
-.date{
-
-}
-.timer {
-    display: flex;
-    align-items: center;
-    font-size: 18px;
-    color: white;
-    margin-right: 1rem;
-    
-}
 
 .shutdown{
     display: flex;
     align-items: center;
     font-size: 30px;
-    color: red;
+    color: rgb(255, 255, 255);
     margin-left: 1rem;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.1rem;
     cursor: pointer;
 }
 .shutdownicon{
