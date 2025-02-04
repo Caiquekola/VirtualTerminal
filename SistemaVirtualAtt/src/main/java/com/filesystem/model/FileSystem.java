@@ -7,6 +7,7 @@ public class FileSystem {
     private Directory root;
     private Directory currentDirectory;
     private List<String> commandHistory;
+    //TODO implementar
     private long freeSpace;
     private long totalSpace;
 
@@ -14,7 +15,7 @@ public class FileSystem {
         this.root = new Directory("/", null);
         this.currentDirectory = root;
         this.commandHistory = new ArrayList<>();
-        this.totalSpace = 1024 * 1024 * 1024; // 1GB
+        this.totalSpace = 1024 * 1024 * 1024; // 1 KB 1 MB -> 1GB
         this.freeSpace = totalSpace;
     }
 

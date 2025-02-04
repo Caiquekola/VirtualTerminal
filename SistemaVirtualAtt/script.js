@@ -3,6 +3,7 @@ let activeWindow = null;
 let windows = {};
 let currentPath = '/';
 
+
 // Initialize windows positions
 document.addEventListener('DOMContentLoaded', () => {
     windows = {
@@ -137,6 +138,7 @@ function navigateUp() {
 
 // Terminal Functions
 function openTerminal() {
+    
     windows.terminal.classList.add('active');
     activateWindow(windows.terminal);
     document.getElementById('terminalInput').focus();
