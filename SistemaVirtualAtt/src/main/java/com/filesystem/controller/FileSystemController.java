@@ -16,6 +16,18 @@ public class FileSystemController {
         this.fileSystemService = fileSystemService;
     }
 
+
+    @GetMapping("/history")
+    public ResponseEntity<List<String>> getCommandHistory() {
+        return ResponseEntity.ok(fileSystemService.getCommandsHistory());
+    }
+
+    @PostMapping("/history")
+    public ResponseEntity<Void> addCommandToHistory(@RequestBody String command) {
+        fileSystemService.addToHistory(command);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/mkdir/{name}")
     public ResponseEntity<String> mkdir(@PathVariable String name) {
         fileSystemService.mkdir(name);

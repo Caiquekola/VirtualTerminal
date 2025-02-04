@@ -110,6 +110,7 @@ function obterIconeArquivo(nomeArquivo) {
     return 'fas fa-file';
 }
 
+// Clique no diretório e busca dos arquivos
 function cliqueNoItem(item) {
     if (item.type === 'directory') {
         fetch(ipBackend + '/api/fs/cd', {
@@ -124,7 +125,7 @@ function cliqueNoItem(item) {
             });
     }
 }
-
+// voltar na pasta
 function navegarParaCima() {
     if (caminhoAtual === '/') return;
 
@@ -160,11 +161,11 @@ function fecharTerminal() {
 // Adição de foco quando clicado em qualquer lugar no terminal
 const windowContent = document.getElementById('windowContent');
 const terminalInput = document.getElementById('terminalInput');
-
-
 windowContent.addEventListener('click', () => {
     terminalInput.focus();
 });
+
+
 
 function entradaTerminal(event) {
     if (event.key === 'Enter') {
@@ -260,4 +261,43 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// Relógio e Data 
+const timer = document.getElementById('timer');
+const date = document.getElementById('date');
+setInterval(() => {
+    timer.innerHTML = new Date().toLocaleTimeString();
+    date.innerHTML = new Date().toLocaleDateString();
+}, 1000);
 
+// Shutdown
+
+const shutdownButton = document.getElementById('shutdown');
+shutdownButton.addEventListener('click', () => {
+    window.location.href = "https://github.com/Caiquekola/VirtualTerminal";
+});
+
+// Icone Folder
+
+const folder = document.getElementById("folder");
+const folderIcon = document.getElementById("folderIcon");
+const folderIconSelected = document.getElementById("folderIconSelected");
+folder.addEventListener('mouseover',()=>{
+    folderIcon.style.display = "none";
+    folderIconSelected.style.display = "";
+    folderIconSelected.style.transform = "scale(1.05)";
+});
+folder.addEventListener('mouseleave',()=>{
+    folderIcon.style.display = "";
+    folderIconSelected.style.display = "none";
+})
+
+
+const prompt = document.getElementById("prompt");
+prompt.addEventListener('mouseover',()=>{
+    
+    prompt.style.transform = "scale(1.05)";
+});
+prompt.addEventListener('mouseleave',()=>{
+    prompt.style.transform = "";
+    
+})

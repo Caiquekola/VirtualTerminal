@@ -16,6 +16,14 @@ public class FileSystemService {
         this.fileSystem = new FileSystem();
     }
 
+    public void addToHistory(String command) {
+        fileSystem.addToHistory(command);
+    }
+
+    public List<String> getCommandsHistory() {
+        return this.fileSystem.getCommandHistory();
+    }
+
     public void mkdir(String name) {
         // Se a pasta já existir, lançar uma exceção
         if(fileSystem.getCurrentDirectory().getContent(name) != null) {
